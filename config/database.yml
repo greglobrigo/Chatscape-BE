@@ -45,7 +45,7 @@ development:
   port: <%= ENV["DB_PORT"] %>
 
   # Schema search path. The server defaults to $user,public
-  #schema_search_path: myapp,sharedapp,public
+  schema_search_path: chatscape
 
   # Minimum log levels, in increasing order:
   #   debug5, debug4, debug3, debug2, debug1,
@@ -87,44 +87,4 @@ production:
   password: <%= ENV["DB_PASSWORD"] %>
   host: <%= ENV["DB_HOST"] %>
   port: <%= ENV["DB_PORT"] %>
-
-
-
-
-# Users Table:
-# Store information about each user.
-# Fields:
-# user_id (Primary Key)
-# username
-# password_hash (for security)
-# email
-# Other user-related information
-# Chats Table:
-
-# This table will represent all types of chats, including public, direct, and group chats.
-# Fields:
-# chat_id (Primary Key)
-# chat_type (Enum: 'public', 'direct', 'group')
-# chat_name (for group chats or public chat rooms)
-# Other chat-related information
-# ChatMembers Table:
-
-# This table will keep track of which users are members of which chats.
-# Fields:
-# chat_member_id (Primary Key)
-# chat_id (Foreign Key to Chats Table)
-# user_id (Foreign Key to Users Table)
-# last_read_message_id (to track where each user left off in a chat)
-# Messages Table:
-
-# Store the actual messages sent in chats.
-# Fields:
-# message_id (Primary Key)
-# chat_id (Foreign Key to Chats Table)
-# user_id (Foreign Key to Users Table)
-# message_text
-# timestamp
-
-  #command to create a migration in rails
-
-
+  schema_search_path: chatscape
