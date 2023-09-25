@@ -1,0 +1,41 @@
+#login to postgresl with username and password
+#psql -U postgres -W chatscape
+
+#login to postgresl with sudo
+#sudo -u postgres psql
+
+#ALTER USER POSTGRES WITH PASSWORD 'POSTGRES';
+
+#list users in postgres
+#\du
+
+#create user in postgres
+#CREATE USER chatscape WITH PASSWORD 'PASSWORD';
+
+#ALTER USER chatscape WITH USER chatscape WITH PASSWORD 'PASSWORD';
+
+#add create db to user chatscape
+#ALTER USER chatscape CREATEDB;
+
+#add all privileges to user chatscape except superuser
+#ALTER USER chatscape WITH CREATEDB CREATEROLE REPLICATION BYPASSRLS;
+
+#login to postgresql with username chatscape and password PASSWORD
+#psql -U chatscape -W
+#-W flag is to prompt for password
+
+
+#ALTER USER chatscape with username of chatscape and password of 'PASSWORD';
+#ALTER USER chatscape WITH PASSWORD 'PASSWORD';
+
+#Q: login to psql with user chatscape?
+#A: psql -U chatscape -W
+
+#DELETE USER chatscape;
+#DROP USER chatscape;
+
+#login to postgres with user postgres without sudo
+#psql -U postgres -W
+
+#show all databases
+#\l
