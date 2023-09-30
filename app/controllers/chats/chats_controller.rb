@@ -1,4 +1,4 @@
-class ChatsController < ApplicationController
+class Chats::ChatsController < ApplicationController
    def new
         request_body = JSON.parse(request.body.read)
         chat_name = request_body["chat_name"]
