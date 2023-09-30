@@ -49,4 +49,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_09_25_043824) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
+  add_foreign_key "chat_members", "chats"
+  add_foreign_key "chat_members", "users"
+  add_foreign_key "messages", "chats"
+  add_foreign_key "messages", "users"
 end
