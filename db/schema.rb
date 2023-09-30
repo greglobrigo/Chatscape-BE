@@ -12,11 +12,12 @@
 
 ActiveRecord::Schema[7.0].define(version: 2023_09_25_043824) do
   # These are extensions that must be enabled in order to support this database
+  enable_extension "pgcrypto"
   enable_extension "plpgsql"
 
   create_table "chat_members", force: :cascade do |t|
     t.integer "chat_id"
-    t.integer "user_id"
+    t.uuid "user_id"
     t.integer "last_read_message_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -31,16 +32,15 @@ ActiveRecord::Schema[7.0].define(version: 2023_09_25_043824) do
 
   create_table "messages", force: :cascade do |t|
     t.integer "chat_id"
-    t.integer "user_id"
+    t.uuid "user_id"
     t.string "message_text"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
-  create_table "users", force: :cascade do |t|
-    t.string "username"
-    t.string "password"
+  create_table "users", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "email"
+    t.string "password"
     t.string "name"
     t.string "handle"
     t.string "auth_token"

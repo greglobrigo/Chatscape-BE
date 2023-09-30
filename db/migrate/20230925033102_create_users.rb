@@ -1,9 +1,10 @@
 class CreateUsers < ActiveRecord::Migration[7.0]
     def change
-        create_table :users do |t|
-        t.string :username
-        t.string :password
+        enable_extension 'pgcrypto'
+
+        create_table :users, id: :uuid do |t|
         t.string :email
+        t.string :password
         t.string :name
         t.string :handle, unique: true, nullable: true
         t.string :auth_token
@@ -12,6 +13,3 @@ class CreateUsers < ActiveRecord::Migration[7.0]
         end
     end
 end
-
-#how to wipe migration history
-#rake db:drop db:create db:migrate
