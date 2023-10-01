@@ -1,15 +1,18 @@
 class Messages::MessagesController < ApplicationController
-  before_action :validate, only: [:send_message]
+  before_action :validate_send_message, only: [:send_message]
+  before_action :validate_get_message, only: [:get_messages]
   def send_message
     request_body = JSON.parse(request.body.read)
     chat_id = request_body['chat_id']
     user_id = request_body['user_id']
+    sender = User.find(user_id).name
     message_text = request_body['message_text']
-    message = Message.create(chat_id:, user_id:, message_text:)
-    if message.persisted?
+    message = Message.create(chat_id:, user_id:, message_text:, sender:)
+    chat = Chat.find(chat_id).update(updated_at: Time.now)
+    if message.persisted? && chat
       render json: { status: 'success', message: 'Message sent successfully' }, status: :ok
     else
-      render json: { status: 'failed', message: 'Message sending failed', errors: message.errors.full_messages.to_sentence }, status: :unprocessable_entity
+      render json: { status: 'failed', error: 'Message sending failed', errors: message.errors.full_messages.to_sentence }, status: :unprocessable_entity
     end
   end
 
@@ -17,33 +20,33 @@ class Messages::MessagesController < ApplicationController
     request_body = JSON.parse(request.body.read)
     user_id = request_body['user_id']
     chat_id = request_body['chat_id']
-    messages = Message.where(user_id:, chat_id:)
-    if messages.nil?
-      render json: { status: 'failed', message: 'Messages not found' }, status: :not_found
-    else
-      render json: { status: 'success', message: 'Messages found', messages: }, status: :ok
-    end
+    messages = Chat.find(chat_id).messages.order(created_at: :desc).limit(10).map { |message| message.as_json(except: [:created_at, :updated_at]) }
+    render json: { status: 'success', message: 'Messages found', messages: messages }, status: :ok
   end
 
   private
 
-  def message_params
+  def send_message_params
     params.require(:message).permit(:chat_id, :user_id, :message_text)
   end
 
-  def validate
-    if message_params[:chat_id].nil? || message_params[:user_id].nil? || message_params[:message_text].nil?
-      render json: { status: 'failed', message: 'Invalid parameters' }, status: :unprocessable_entity
+  def validate_send_message
+    if send_message_params[:chat_id].nil? || send_message_params[:user_id].nil? || send_message_params[:message_text].nil?
+      render json: { status: 'failed', error: 'Invalid parameters' }, status: :unprocessable_entity
     end
-    chat = Chat.joins(:users).where(id: message_params[:chat_id], users: { id: message_params[:user_id] }).first
-    return render json: { status: 'failed', message: 'User not found, chat not found, or user is not a member of the chat' }, status: :unprocessable_entity unless chat
+    chat = Chat.joins(:users).where(id: send_message_params[:chat_id], users: { id: send_message_params[:user_id] }).first
+    return render json: { status: 'failed', error: 'User not found, chat not found, or user is not a member of the chat' }, status: :unprocessable_entity unless chat
+  end
 
-    # chatexists = Chat.where(id: message_params[:chat_id]).exists?
-    # return render json: { status: 'failed', message: 'Chat not found' }, status: :not_found unless chatexists
-    # userexists = User.where(id: message_params[:user_id]).exists?
-    # return render json: { status: 'failed', message: 'User not found' }, status: :not_found unless userexists
+  def get_message_params
+    params.require(:message).permit(:chat_id, :user_id)
+  end
 
-    # chat_member = ChatMember.where(chat_id: message_params[:chat_id], user_id: message_params[:user_id]).first
-    # return render json: { status: 'failed', message: 'User is not a member of the chat' }, status: :unprocessable_entity unless chat_member
+  def validate_get_message
+    if get_message_params[:chat_id].nil? || get_message_params[:user_id].nil?
+      render json: { status: 'failed', error: 'Invalid parameters' }, status: :unprocessable_entity
+    end
+    chat = Chat.joins(:users).where(id: get_message_params[:chat_id], users: { id: get_message_params[:user_id] }).first
+    return render json: { status: 'failed', error: 'User not found, chat not found, or user is not a member of the chat' }, status: :unprocessable_entity unless chat
   end
 end

@@ -7,6 +7,7 @@ Rails.application.routes.draw do
     post '/search-users-all-or-direct', to: 'users#search_users_all_or_direct'
     post '/search-users-group', to: 'users#search_users_group'
     post '/search-users-public', to: 'users#search_users_public'
+    post '/get-profile', to: 'users#get_profile'
   end
 
   namespace :chats do
