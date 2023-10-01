@@ -6,9 +6,9 @@ class Messages::MessagesController < ApplicationController
     message_text = request_body['message_text']
     message = Message.create(chat_id:, user_id:, message_text:)
     if message.persisted?
-      render json: { message: 'Message sent successfully', message: }, status: :ok
+      render json: { status: "success", message: 'Message sent successfully', message: }, status: :ok
     else
-      render json: { message: 'Message sending failed', errors: message.errors }, status: :unprocessable_entity
+      render json: { status: "failed", message: 'Message sending failed', errors: message.errors }, status: :unprocessable_entity
     end
   end
 
@@ -18,9 +18,9 @@ class Messages::MessagesController < ApplicationController
     chat_id = request_body['chat_id']
     messages = Message.where(user_id:, chat_id:)
     if messages.nil?
-      render json: { message: 'Messages not found' }, status: :not_found
+      render json: { status: "failed", message: 'Messages not found' }, status: :not_found
     else
-      render json: { message: 'Messages found', messages: }, status: :ok
+      render json: { status: "success", message: 'Messages found', messages: }, status: :ok
     end
   end
 end

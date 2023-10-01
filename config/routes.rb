@@ -7,7 +7,8 @@ Rails.application.routes.draw do
   end
 
   namespace :chats do
-    post '/', to: 'chats#new'
+    post '/publicOrGroup', to: 'chats#createPublicOrGroup'
+    post '/direct', to: 'chats#createDirect'
     delete '/', to: 'chats#delete'
   end
 
@@ -17,7 +18,7 @@ Rails.application.routes.draw do
   end
 
   namespace :chatmembers do
-    get '/test', to: 'chatmembers#test'
+    post '/add', to: 'chatmembers#add'
   end
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 

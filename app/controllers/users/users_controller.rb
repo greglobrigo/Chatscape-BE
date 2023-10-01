@@ -29,7 +29,7 @@ class Users::UsersController < ApplicationController
             date_now = DateTime.now + 1.week
             date_now = date_now.strftime('%Y%m%d').to_s
             token = Base64.encode64(date_now).gsub("\n", "")
-            render json: { status: "success", message: "Login Successful", token: token }, status: :ok
+            render json: { status: "success", message: "Login Successful", token: token, user: user.id}, status: :ok
         else
             render json: { status: "failed", error: "Invalid email or password." }, status: :bad_request
         end
