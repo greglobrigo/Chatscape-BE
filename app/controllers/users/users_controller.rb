@@ -34,4 +34,46 @@ class Users::UsersController < ApplicationController
             render json: { status: "failed", error: "Invalid email or password." }, status: :bad_request
         end
     end
+
+    def search_users_direct
+        request_body = JSON.parse(request.body.read)
+        user_id = request_body['user_id']
+        search_string = request_body['search_string']
+        users = User.where('email LIKE ?', "%#{search_string}%").or(User.where('handle LIKE ?', "%#{search_string}%")).or(User.where('name LIKE ?', "%#{search_string}%"))
+        .where.not(id: user_id).where.not(id: User.joins(:chats).where(chats: { chat_type: 'direct' }).where('chat_members.user_id = ?', user_id)).limit(10)
+        users = users.map { |user| { id: user.id, email: user.email, handle: user.handle, name: user.name } }
+        if users.length == 0
+            render json: { status: "success", message: 'No User Found' }, status: :ok
+        else
+            render json: { status: "success", message: 'Users found', users: users }, status: :ok
+        end
+    end
+
+    def search_users_group
+        request_body = JSON.parse(request.body.read)
+        user_id = request_body['user_id']
+        search_string = request_body['search_string']
+        users = User.where('email LIKE ?', "%#{search_string}%").or(User.where('handle LIKE ?', "%#{search_string}%")).or(User.where('name LIKE ?', "%#{search_string}%"))
+        .where.not(id: user_id).where.not(id: User.joins(:chats).where(chats: { chat_type: 'group' }).where('chat_members.user_id = ?', user_id)).limit(10)
+        users = users.map { |user| { id: user.id, email: user.email, handle: user.handle, name: user.name } }
+        if users.length == 0
+            render json: { status: "success", message: 'No User Found' }, status: :ok
+        else
+            render json: { status: "success", message: 'Users found', users: users }, status: :ok
+        end
+    end
+
+    def search_users_public
+        request_body = JSON.parse(request.body.read)
+        user_id = request_body['user_id']
+        search_string = request_body['search_string']
+        users = User.where('email LIKE ?', "%#{search_string}%").or(User.where('handle LIKE ?', "%#{search_string}%")).or(User.where('name LIKE ?', "%#{search_string}%"))
+        .where.not(id: user_id).where.not(id: User.joins(:chats).where(chats: { chat_type: 'public' }).where('chat_members.user_id = ?', user_id)).limit(10)
+        users = users.map { |user| { id: user.id, email: user.email, handle: user.handle, name: user.name } }
+        if users.length == 0
+            render json: { status: "success", message: 'No User Found' }, status: :ok
+        else
+            render json: { status: "success", message: 'Users found', users: users }, status: :ok
+        end
+    end
 end

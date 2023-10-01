@@ -4,11 +4,14 @@ Rails.application.routes.draw do
   namespace :users do
     post '/register', to: 'users#register'
     post '/login', to: 'users#login'
+    post '/search-users-direct', to: 'users#search_users_direct'
+    post '/search-users-group', to: 'users#search_users_group'
+    post '/search-users-public', to: 'users#search_users_public'
   end
 
   namespace :chats do
-    post '/publicOrGroup', to: 'chats#createPublicOrGroup'
-    post '/direct', to: 'chats#createDirect'
+    post '/public-or-group', to: 'chats#create_public_or_group'
+    post '/direct', to: 'chats#create_direct'
     delete '/', to: 'chats#delete'
   end
 

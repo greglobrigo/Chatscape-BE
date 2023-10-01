@@ -1,5 +1,5 @@
 class Chats::ChatsController < ApplicationController
-  def createPublicOrGroup
+  def create_public_or_group
     request_body = JSON.parse(request.body.read)
     chat_name = request_body['chat_name']
     chat_type = request_body['chat_type']
@@ -41,7 +41,7 @@ class Chats::ChatsController < ApplicationController
     render json: { status: 'success', message: 'Chat created successfully', chat: chat }, status: :ok
   end
 
-  def createDirect
+  def create_direct
     request_body = JSON.parse(request.body.read)
     participants = request_body['chat_members']
 
