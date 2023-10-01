@@ -4,7 +4,7 @@ Rails.application.routes.draw do
   namespace :users do
     post '/register', to: 'users#register'
     post '/login', to: 'users#login'
-    post '/search-users-direct', to: 'users#search_users_direct'
+    post '/search-users-all-or-direct', to: 'users#search_users_all_or_direct'
     post '/search-users-group', to: 'users#search_users_group'
     post '/search-users-public', to: 'users#search_users_public'
   end

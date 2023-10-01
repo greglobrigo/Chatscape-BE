@@ -35,7 +35,7 @@ class Users::UsersController < ApplicationController
         end
     end
 
-    def search_users_direct
+    def search_users_all_or_direct
         request_body = JSON.parse(request.body.read)
         user_id = request_body['user_id']
         search_string = request_body['search_string']
