@@ -41,7 +41,7 @@ class Chats::ChatsController < ApplicationController
     render json: { status: 'success', message: 'Chat created successfully', chat: chat }, status: :ok
   end
 
-  def create_direct
+  def create_or_retrieve
     request_body = JSON.parse(request.body.read)
     participants = request_body['chat_members']
 
@@ -55,8 +55,11 @@ class Chats::ChatsController < ApplicationController
     userexists = User.where(id: member1).exists? && User.where(id: member2).exists?
     return render json: { status: 'failed', error: 'Useror users not found' }, status: :not_found unless userexists
 
-    chat = Chat.where(chat_type: 'direct').where('chat_members.user_id = ? OR chat_members.user_id = ?', member1, member2).group('chats.id').having('COUNT(*) = 2').joins(:chat_members).first
-    return render json: { status: 'failed', error: 'Direct chat already exists' }, status: :unprocessable_entity if chat
+    chat = Chat.joins(:chat_members).where(chat_members: {user_id: [member1, member2]}).group(:id).having("count(*) = 2").first
+    if chat.present?
+      messages = Message.where(chat_id: chat.id).order(created_at: :asc).limit(100)
+      return render json: { status: 'success', message: 'Chat retrieved successfully', chat_id: chat.id, messages: messages }, status: :ok
+    end
 
     chat = Chat.create(chat_name: 'Direct Chat', chat_type: 'direct')
     unless chat.persisted?
@@ -69,7 +72,7 @@ class Chats::ChatsController < ApplicationController
         return render json: { status: 'failed', error: 'Chat creation failed', errors: chat_member.errors.to_sentence }, status: :unprocessable_entity
       end
     end
-    render json: { status: "success", message: 'Chat created successfully', chat: }, status: :ok
+    render json: { status: "success", message: 'Chat created successfully', chat_id: chat.id, messages: [] }, status: :ok
   end
 
   def delete

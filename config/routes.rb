@@ -12,7 +12,7 @@ Rails.application.routes.draw do
 
   namespace :chats do
     post '/public-or-group', to: 'chats#create_public_or_group'
-    post '/direct', to: 'chats#create_direct'
+    post '/create-or-retrieve', to: 'chats#create_or_retrieve'
     delete '/', to: 'chats#delete'
   end
 
