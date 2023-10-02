@@ -29,6 +29,7 @@ class Users::UsersController < ApplicationController
             date_now = DateTime.now + 1.week
             date_now = date_now.strftime('%Y%m%d').to_s
             token = Base64.encode64(date_now).gsub("\n", "")
+            user.update(updated_at: DateTime.now)
             render json: { status: "success", message: "Login Successful", token: token, user: user.id}, status: :ok
         else
             render json: { status: 'failed', error: "Invalid email or password." }, status: :bad_request
@@ -106,6 +107,8 @@ class Users::UsersController < ApplicationController
         group_chats.each { |chat| chat['messages'] = chat['messages'].last() }
         public_chats.each { |chat| chat['messages'] = chat['messages'].last() }
 
-        render json: { user: user, direct_chats: direct_chats, group_chats: group_chats, public_chats: public_chats }, status: :ok
+        active_users = User.order(updated_at: :desc).limit(30).map { |user| { id: user.id, email: user.email, handle: user.handle, name: user.name } }
+
+        render json: { user: user, direct_chats: direct_chats, group_chats: group_chats, public_chats: public_chats, active_users: active_users }, status: :ok
     end
 end
