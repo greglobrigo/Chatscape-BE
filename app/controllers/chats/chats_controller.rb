@@ -43,7 +43,9 @@ class Chats::ChatsController < ApplicationController
 
   def create_or_retrieve
     request_body = JSON.parse(request.body.read)
-    participants = request_body['chat_members']
+    sender = request_body['sender']
+    receiver = request_body['receiver']
+    participants = [sender, receiver]
 
     if participants.nil? || participants.length != 2
       return render json: { status: 'failed', error: 'Direct chat must have exactly 2 participants' }, status: :unprocessable_entity

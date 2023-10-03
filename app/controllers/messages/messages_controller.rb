@@ -4,7 +4,7 @@ class Messages::MessagesController < ApplicationController
   def send_message
     request_body = JSON.parse(request.body.read)
     chat_id = request_body['chat_id']
-    user_id = request_body['user_id']
+    user_id = request_body['sender']
     sender = User.find(user_id).name
     message_text = request_body['message_text']
     message = Message.create(chat_id:, user_id:, message_text:, sender:)
