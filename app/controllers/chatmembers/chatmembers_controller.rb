@@ -56,6 +56,19 @@ class Chatmembers::ChatmembersController < ApplicationController
     render json: { status: "success", message: 'Chat member deleted successfully' }, status: :ok
   end
 
+  def archive_chatmember
+    request_body = JSON.parse(request.body.read)
+    chat_id = request_body['chat_id']
+    user_id = request_body['user_id']
+    chat = Chat.joins(:chat_members).where(chat_members: {user_id: user_id}).where(id: chat_id).first
+    if chat.nil?
+      render json: { status: 'failed', error: 'Chat not found' }, status: :not_found
+    else
+      Chatmember.where(chat_id: chat_id, user_id: user_id).update(archived: true)
+      render json: { status: "success", message: 'Chat archived successfully' }, status: :ok
+    end
+  end
+
   private
 
   def chatmembers_params
