@@ -28,7 +28,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_10_03_195707) do
     t.string "chat_name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.boolean "archived"
+    t.boolean "archived", default: false
   end
 
   create_table "messages", force: :cascade do |t|
