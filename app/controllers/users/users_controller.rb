@@ -87,18 +87,19 @@ class Users::UsersController < ApplicationController
         return render json: { status: 'failed', error: "User not found" }, status: :bad_request unless user
 
         direct_chats = Chat.joins(:chat_members)
-                                             .where(chat_members: { user_id: user_id }, chat_type: 'direct')
+                                             .where(chat_members: { user_id: user_id, archived: false }, chat_type: 'direct')
                                              .order(updated_at: :desc)
                                              .includes(:messages).limit(10)
                                              .map { |chat| chat.as_json(include: { messages: { except: [:created_at, :updated_at] } }, except: [:created_at, :updated_at]) }
 
         group_chats = Chat.joins(:chat_members)
-                                            .where(chat_members: { user_id: user_id }, chat_type: 'group')
+                                            .where(chat_members: { user_id: user_id, archived: false }, chat_type: 'group')
                                             .order(updated_at: :desc)
                                             .includes(:messages).limit(10)
                                             .map { |chat| chat.as_json(include: { messages: { except: [:created_at, :updated_at] } }, except: [:created_at, :updated_at]) }
 
-        public_chats = Chat.where(chat_type: 'public')
+        public_chats = Chat.joins(:chat_members)
+                                             .where(chat_members: { user_id: user_id, archived: false }, chat_type: 'public')
                                              .order(updated_at: :desc)
                                              .includes(:messages).limit(10)
                                              .map { |chat| chat.as_json(include: { messages: { except: [:created_at, :updated_at] } }, except: [:created_at, :updated_at]) }
