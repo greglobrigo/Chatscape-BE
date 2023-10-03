@@ -14,6 +14,7 @@ Rails.application.routes.draw do
     post '/public-or-group', to: 'chats#create_public_or_group'
     post '/create-or-retrieve', to: 'chats#create_or_retrieve'
     delete '/', to: 'chats#delete'
+    post '/archive', to: 'chats#archive_chat'
   end
 
   namespace :messages do
