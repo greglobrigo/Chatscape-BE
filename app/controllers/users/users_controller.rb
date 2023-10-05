@@ -41,6 +41,15 @@ class Users::UsersController < ApplicationController
         user_id = request_body["user_id"]
         old_password = request_body["old_password"]
         new_password = request_body["new_password"]
+
+        if user_id == nil || old_password == nil || new_password == nil
+            return render json: { status: 'failed', error: "Invalid request" }, status: :bad_request
+        end
+
+        if old_password == new_password
+            return render json: { status: 'failed', error: "New password cannot be the same as old password." }, status: :bad_request
+        end
+
         salt = ENV["SALT"]
         old_password = Base64.encode64(old_password + salt)
         new_password = Base64.encode64(new_password + salt)
