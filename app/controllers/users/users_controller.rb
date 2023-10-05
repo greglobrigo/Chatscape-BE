@@ -36,6 +36,23 @@ class Users::UsersController < ApplicationController
         end
     end
 
+    def change_password
+        request_body = JSON.parse(request.body.read)
+        user_id = request_body["user_id"]
+        old_password = request_body["old_password"]
+        new_password = request_body["new_password"]
+        salt = ENV["SALT"]
+        old_password = Base64.encode64(old_password + salt)
+        new_password = Base64.encode64(new_password + salt)
+        user = User.find_by(id: user_id, password: old_password)
+        if user
+            user.update(password: new_password)
+            render json: { status: "success", message: "Password Changed Successfully!" }, status: :ok
+        else
+            render json: { status: 'failed', error: "Invalid old password." }, status: :bad_request
+        end
+    end
+
     def search_users_all_or_direct
         request_body = JSON.parse(request.body.read)
         user_id = request_body['user_id']
