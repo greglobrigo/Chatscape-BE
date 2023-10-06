@@ -25,6 +25,9 @@ class Users::UsersController < ApplicationController
         salt = ENV["SALT"]
         password = Base64.encode64(password + salt)
         user = User.find_by(email: email, password: password)
+        # TODO: 
+        #Add validation to check if the user is already verified
+        #Add validation to check if the user is already in process of verifying through email
         if user
             date_now = DateTime.now + 1.week
             date_now = date_now.strftime('%Y%m%d').to_s
