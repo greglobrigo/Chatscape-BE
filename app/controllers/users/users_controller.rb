@@ -33,6 +33,8 @@ class Users::UsersController < ApplicationController
             token = Base64.encode64(date_now).gsub("\n", "")
             user.update(updated_at: DateTime.now)
             render json: { status: "success", message: "Login Successful", token: token, user: user.id}, status: :ok
+        elsif user.validated === 'for authentication'
+            render json: {status: 'success', authentication: "for email validation"}, status: :ok
         else
             render json: { status: 'failed', error: "Invalid email or password." }, status: :bad_request
         end
