@@ -45,6 +45,15 @@ class Users::UsersController < ApplicationController
     def confirm_email
         request_body = JSON.parse(request.body.read)
         email = request_body["email"]
+        auth_token = request_body["auth_token"]
+        user = User.find_by(email: email)
+        return render json: { status: 'failed', error: "Invalid request." }, status: :bad_request if user.status == 'active' || user.nil?
+        if user.auth_token == auth_token
+            user.update(status: 'active')
+            render json: { status: "success", message: "Email Confirmed!" }, status: :ok
+        else
+            render json: { status: 'failed', error: "Invalid token, please try again." }, status: :bad_request
+        end
     end
 
 
