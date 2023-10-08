@@ -1,5 +1,5 @@
 class ApplicationController < ActionController::API
-  before_action :authenticate, except: %i[register login, confirm_email, resend_token]
+  before_action :authenticate, except: %i[register login, confirm_email, resend_token, forgot_password, confirm_forgot_password]
   def authenticate
     unless request.headers['Authorization']
       return render json: { status: 'failed', error: 'Missing token.' },
