@@ -1,7 +1,6 @@
 databases:
   - name: chatscape
     databaseName: chatscape
-    schema: chatscape
     user: chatscape
 
 services:
