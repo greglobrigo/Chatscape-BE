@@ -94,6 +94,17 @@ class Users::UsersController < ApplicationController
         end
     end
 
+    def forgot_password
+        request_body = JSON.parse(request.body.read)
+        email = request_body["email"]
+        user = User.find_by(email: email)
+        return render json: { status: 'failed', error: "Invalid request." }, status: :bad_request if user.nil?
+        forgot_password_token = generate_token
+        user.update(forgot_password_token: forgot_password_token)
+        mailer = UserMailer.forgot_password(email, user.name, user.handle, forgot_password_token).deliver_later
+        render json: { status: "success", message: "A password reset link has been sent to #{email}." }, status: :ok
+    end
+
     def search_users_all_or_direct
         request_body = JSON.parse(request.body.read)
         user_id = request_body['user_id']
