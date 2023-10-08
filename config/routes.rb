@@ -10,6 +10,9 @@ Rails.application.routes.draw do
     post '/get-profile', to: 'users#get_profile'
     post '/change-password', to: 'users#change_password'
     post '/confirm-email', to: 'users#confirm_email'
+    post '/resend-token', to: 'users#resend_token'
+    post '/forgot-password', to: 'users#forgot_password'
+    post '/confirm-forgot-password', to: 'users#confirm_forgot_password'
   end
 
   namespace :chats do
