@@ -6,14 +6,13 @@ class Users::UsersController < ApplicationController
         password_confirmation = request_body["password_confirmation"]
         name = request_body["name"] || ""
         handle = request_body["handle"] || ""
-        UserMailer.welcome_email('gregl@mosaic-solutions.com', name, handle, "test123").deliver_later
-        return render json: "success"
         if password == password_confirmation
             salt = ENV["SALT"]
             password = Base64.encode64(password + salt)
             auth_token = generate_token
             user = User.new(email: email, password: password, auth_token: auth_token, status: 'unauthenticated')
             if user.save
+                mailer = UserMailer.email_message(email, name, handle, auth_token).deliver_later
                 render json: { status: "success", message: "Registration Successful!", system: "An email has been sent to #{email} with a code to verify your account."}, status: :ok
             else
                 render json: { status: 'failed', error: user.errors.full_messages.to_sentence }, status: :bad_request
