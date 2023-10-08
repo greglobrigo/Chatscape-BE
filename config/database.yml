@@ -88,3 +88,4 @@ production:
   host: <%= ENV["DB_HOST"] %>
   port: <%= ENV["DB_PORT"] %>
   schema_search_path: chatscape
+  url: <%= ENV['DATABASE_URL'] %>
