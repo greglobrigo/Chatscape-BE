@@ -4,10 +4,13 @@ class Users::UsersController < ApplicationController
         email = request_body["email"]
         password = request_body["password"]
         password_confirmation = request_body["password_confirmation"]
+        name = request_body["name"] || ""
+        handle = request_body["handle"] || ""
         if password == password_confirmation
             salt = ENV["SALT"]
             password = Base64.encode64(password + salt)
-            user = User.new(email: email, password: password)
+            auth_token = generate_token
+            user = User.new(email: email, password: password, auth_token: auth_token, status: 'unauthenticated')
             if user.save
                 render json: { status: "success", message: "Registration Successful!" }, status: :ok
             else
@@ -25,18 +28,16 @@ class Users::UsersController < ApplicationController
         salt = ENV["SALT"]
         password = Base64.encode64(password + salt)
         user = User.find_by(email: email, password: password)
-        # TODO: 
-        validated = user.validated === true
-        if user && validated
+        return render json: { status: 'failed', error: "Invalid email or password." }, status: :bad_request unless user
+        user_status = user.status
+        if user && user_status === 'active'
             date_now = DateTime.now + 1.week
             date_now = date_now.strftime('%Y%m%d').to_s
             token = Base64.encode64(date_now).gsub("\n", "")
             user.update(updated_at: DateTime.now)
             render json: { status: "success", message: "Login Successful", token: token, user: user.id}, status: :ok
-        elsif user.validated === 'for authentication'
+        elsif user && user_status === 'unauthenticated'
             render json: {status: 'success', authentication: "for email validation"}, status: :ok
-        else
-            render json: { status: 'failed', error: "Invalid email or password." }, status: :bad_request
         end
     end
 
@@ -141,5 +142,11 @@ class Users::UsersController < ApplicationController
         active_users = User.order(updated_at: :desc).limit(30).map { |user| { id: user.id, email: user.email, handle: user.handle, name: user.name } }
 
         render json: { user: user, direct_chats: direct_chats, group_chats: group_chats, public_chats: public_chats, active_users: active_users }, status: :ok
+    end
+
+    private
+
+    def generate_token
+        SecureRandom.alphanumeric(5)
     end
 end
