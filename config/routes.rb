@@ -9,6 +9,7 @@ Rails.application.routes.draw do
     post '/search-users-public', to: 'users#search_users_public'
     post '/get-profile', to: 'users#get_profile'
     post '/change-password', to: 'users#change_password'
+    post '/confirm-email', to: 'users#confirm_email'
   end
 
   namespace :chats do
