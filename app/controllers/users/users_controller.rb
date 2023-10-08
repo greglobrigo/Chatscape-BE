@@ -6,6 +6,8 @@ class Users::UsersController < ApplicationController
         password_confirmation = request_body["password_confirmation"]
         name = request_body["name"] || ""
         handle = request_body["handle"] || ""
+        UserMailer.welcome_email('gregl@mosaic-solutions.com', name, handle, "test123").deliver_later
+        return render json: "success"
         if password == password_confirmation
             salt = ENV["SALT"]
             password = Base64.encode64(password + salt)
