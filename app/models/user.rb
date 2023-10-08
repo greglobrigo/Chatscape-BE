@@ -5,4 +5,5 @@ class User < ApplicationRecord
     has_many :chats, through: :chat_members
     validates :email, presence: true, uniqueness: true
     validates :password, presence: true, length: { minimum: 8 }
+    validates :status, presence: true, inclusion: { in: %w[active unauthenticated] }
 end
