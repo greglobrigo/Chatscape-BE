@@ -56,6 +56,17 @@ class Users::UsersController < ApplicationController
         end
     end
 
+    def resend_token
+        request_body = JSON.parse(request.body.read)
+        email = request_body["email"]
+        user = User.find_by(email: email)
+        return render json: { status: 'failed', error: "Invalid request." }, status: :bad_request if user.status == 'active' || user.nil?
+        auth_token = generate_token
+        user.update(auth_token: auth_token)
+        mailer = UserMailer.resend_token(email, user.name, user.handle, auth_token).deliver_later
+        render json: { status: "success", message: "A new token has been sent your email #{email}." }, status: :ok
+    end
+
 
     def change_password
         request_body = JSON.parse(request.body.read)
