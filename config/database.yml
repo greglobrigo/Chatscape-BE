@@ -45,7 +45,6 @@ development:
   port: <%= ENV["DB_PORT"] %>
 
   # Schema search path. The server defaults to $user,public
-  schema_search_path: chatscape
 
   # Minimum log levels, in increasing order:
   #   debug5, debug4, debug3, debug2, debug1,
@@ -87,6 +86,5 @@ production:
   password: <%= ENV["DB_PASSWORD"] %>
   host: <%= ENV["DB_HOST"] %>
   port: <%= ENV["DB_PORT"] %>
-  schema_search_path: chatscape
   url: <%= ENV['DATABASE_URL'] %>
   database_url: <%= ENV['DATABASE_URL'] %>
