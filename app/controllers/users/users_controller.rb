@@ -10,7 +10,7 @@ class Users::UsersController < ApplicationController
             salt = ENV["SALT"]
             password = Base64.encode64(password + salt)
             auth_token = generate_token
-            user = User.new(email: email, password: password, auth_token: auth_token, status: 'unauthenticated')
+            user = User.new(email: email, password: password, auth_token: auth_token, status: 'unauthenticated', name: name, handle: handle)
             if user.save
                 mailer = UserMailer.email_message(email, name, handle, auth_token).deliver_later
                 render json: { status: "success", message: "Registration Successful!", system: "An email has been sent to #{email} with a code to verify your account."}, status: :ok
