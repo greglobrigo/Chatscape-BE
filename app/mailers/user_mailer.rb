@@ -9,4 +9,8 @@ class UserMailer < ApplicationMailer
     def resend_token( email, name, handle, code )
         mail(to: email, subject: 'Chatscape Verification Token', body: "Hello #{name}. Your new verification code is #{code}")
     end
+
+    def forgot_password( email, name, handle, code )
+        mail(to: email, subject: 'Chatscape Forgot Password', body: "Hello #{name}. Your password reset code is #{code}")
+    end
 end

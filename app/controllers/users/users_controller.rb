@@ -99,10 +99,26 @@ class Users::UsersController < ApplicationController
         email = request_body["email"]
         user = User.find_by(email: email)
         return render json: { status: 'failed', error: "Invalid request." }, status: :bad_request if user.nil?
-        forgot_password_token = generate_token
+        forgot_password_token = generate_token_fp
         user.update(forgot_password_token: forgot_password_token)
         mailer = UserMailer.forgot_password(email, user.name, user.handle, forgot_password_token).deliver_later
-        render json: { status: "success", message: "A password reset link has been sent to #{email}." }, status: :ok
+        render json: { status: "success", message: "A password reset code has been sent to #{email}." }, status: :ok
+    end
+
+    def confirm_forgot_password
+        request_body = JSON.parse(request.body.read)
+        email = request_body["email"]
+        forgot_password_token = request_body["forgot_password_token"]
+        user = User.find_by(email: email)
+        return render json: { status: 'failed', error: "Invalid request." }, status: :bad_request if user.nil?
+        return render json: { status: 'failed', error: "Invalid token." }, status: :bad_request if user.forgot_password_token != forgot_password_token
+        new_password = request_body["new_password"]
+        new_password_confirmation = request_body["new_password_confirmation"]
+        return render json: { status: 'failed', error: "passwords do not match." }, status: :bad_request if new_password != new_password_confirmation
+        salt = ENV["SALT"]
+        new_password = Base64.encode64(new_password + salt)
+        user.update(password: new_password, forgot_password_token: nil)
+        render json: { status: "success", message: "Password Changed Successfully!" }, status: :ok
     end
 
     def search_users_all_or_direct
@@ -186,5 +202,9 @@ class Users::UsersController < ApplicationController
 
     def generate_token
         SecureRandom.alphanumeric(5)
+    end
+
+    def generate_token_fp
+        SecureRandom.alphanumeric(12)
     end
 end
