@@ -12,7 +12,7 @@ class Users::UsersController < ApplicationController
             auth_token = generate_token
             user = User.new(email: email, password: password, auth_token: auth_token, status: 'unauthenticated')
             if user.save
-                render json: { status: "success", message: "Registration Successful!" }, status: :ok
+                render json: { status: "success", message: "Registration Successful!", system: "An email has been sent to #{email} with a code to verify your account."}, status: :ok
             else
                 render json: { status: 'failed', error: user.errors.full_messages.to_sentence }, status: :bad_request
             end
@@ -40,6 +40,12 @@ class Users::UsersController < ApplicationController
             render json: {status: 'success', authentication: "for email validation"}, status: :ok
         end
     end
+
+    def confirm_email
+        request_body = JSON.parse(request.body.read)
+        email = request_body["email"]
+    end
+
 
     def change_password
         request_body = JSON.parse(request.body.read)
