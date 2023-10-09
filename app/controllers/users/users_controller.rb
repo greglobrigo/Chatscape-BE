@@ -22,6 +22,26 @@ class Users::UsersController < ApplicationController
         end
     end
 
+    def admin_register
+        request_body = JSON.parse(request.body.read)
+        email = request_body["email"]
+        password = request_body["password"]
+        salt = ENV["SALT"]
+        name = request_body["name"] || ""
+        handle = request_body["handle"] || ""
+        auth_token = generate_token
+        password = Base64.encode64(password + salt)
+        admin_secret = ENV["ADMIN_SECRET"]
+        return render json: { status: 'failed', error: "Invalid request." }, status: :bad_request if email == nil || password == nil || name == nil || handle == nil || auth_token == nil || admin_secret == nil
+        return render json: { status: 'failed', error: "Invalid request." }, status: :bad_request if request_body["admin_secret"] != admin_secret
+        user = User.new(email: email, password: password, auth_token: auth_token, status: 'active', name: name, handle: handle)
+        if user.save
+            render json: { status: "success", message: "Admin Registration Successful!"}, status: :ok
+        else
+            render json: { status: 'failed', error: user.errors.full_messages.to_sentence }, status: :bad_request
+        end
+    end
+
     def login
         request_body = JSON.parse(request.body.read)
         email = request_body["email"]
@@ -167,35 +187,41 @@ class Users::UsersController < ApplicationController
         request_body = JSON.parse(request.body.read)
         user_id = request_body['user_id']
         user = User.find_by(id: user_id)
+        return render json: { status: 'failed', error: "User not found" }, status: :bad_request unless user
         user = { id: user.id, email: user.email, handle: user.handle, name: user.name }
 
-        return render json: { status: 'failed', error: "User not found" }, status: :bad_request unless user
-
-        direct_chats = Chat.joins(:chat_members)
-                                             .where(chat_members: { user_id: user_id, archived: false }, chat_type: 'direct')
-                                             .order(updated_at: :desc)
-                                             .includes(:messages).limit(10)
-                                             .map { |chat| chat.as_json(include: { messages: { except: [:created_at, :updated_at] } }, except: [:created_at, :updated_at]) }
-
-        group_chats = Chat.joins(:chat_members)
-                                            .where(chat_members: { user_id: user_id, archived: false }, chat_type: 'group')
+        chats = Chat.joins(:chat_members)
+                                            .where(chat_members: { user_id: user_id, archived: false }, chat_type: ['direct', 'group', 'public'])
                                             .order(updated_at: :desc)
                                             .includes(:messages).limit(10)
                                             .map { |chat| chat.as_json(include: { messages: { except: [:created_at, :updated_at] } }, except: [:created_at, :updated_at]) }
 
-        public_chats = Chat.joins(:chat_members)
-                                             .where(chat_members: { user_id: user_id, archived: false }, chat_type: 'public')
-                                             .order(updated_at: :desc)
-                                             .includes(:messages).limit(10)
-                                             .map { |chat| chat.as_json(include: { messages: { except: [:created_at, :updated_at] } }, except: [:created_at, :updated_at]) }
+        # direct_chats = Chat.joins(:chat_members)
+        #                                      .where(chat_members: { user_id: user_id, archived: false }, chat_type: 'direct')
+        #                                      .order(updated_at: :desc)
+        #                                      .includes(:messages).limit(10)
+        #                                      .map { |chat| chat.as_json(include: { messages: { except: [:created_at, :updated_at] } }, except: [:created_at, :updated_at]) }
 
-        direct_chats.each { |chat| chat['messages'] = chat['messages'].last() }
-        group_chats.each { |chat| chat['messages'] = chat['messages'].last() }
-        public_chats.each { |chat| chat['messages'] = chat['messages'].last() }
+        # group_chats = Chat.joins(:chat_members)
+        #                                     .where(chat_members: { user_id: user_id, archived: false }, chat_type: 'group')
+        #                                     .order(updated_at: :desc)
+        #                                     .includes(:messages).limit(10)
+        #                                     .map { |chat| chat.as_json(include: { messages: { except: [:created_at, :updated_at] } }, except: [:created_at, :updated_at]) }
+
+        # public_chats = Chat.joins(:chat_members)
+        #                                      .where(chat_members: { user_id: user_id, archived: false }, chat_type: 'public')
+        #                                      .order(updated_at: :desc)
+        #                                      .includes(:messages).limit(10)
+        #                                      .map { |chat| chat.as_json(include: { messages: { except: [:created_at, :updated_at] } }, except: [:created_at, :updated_at]) }
+
+        # direct_chats.each { |chat| chat['messages'] = chat['messages'].last() }
+        # group_chats.each { |chat| chat['messages'] = chat['messages'].last() }
+        # public_chats.each { |chat| chat['messages'] = chat['messages'].last() }
 
         active_users = User.order(updated_at: :desc).limit(30).map { |user| { id: user.id, email: user.email, handle: user.handle, name: user.name } }
 
-        render json: { user: user, direct_chats: direct_chats, group_chats: group_chats, public_chats: public_chats, active_users: active_users }, status: :ok
+        # render json: { user: user, direct_chats: direct_chats, group_chats: group_chats, public_chats: public_chats, active_users: active_users }, status: :ok
+        render json: { user: user, chats: chats, active_users: active_users }, status: :ok
     end
 
     private

@@ -13,6 +13,7 @@ Rails.application.routes.draw do
     post '/resend-token', to: 'users#resend_token'
     post '/forgot-password', to: 'users#forgot_password'
     post '/confirm-forgot-password', to: 'users#confirm_forgot_password'
+    post '/admin-register', to: 'users#admin_register'
   end
 
   namespace :chats do
