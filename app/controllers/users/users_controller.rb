@@ -195,7 +195,7 @@ class Users::UsersController < ApplicationController
                                         .where(chat_members: { user_id: user_id, archived: false }, chat_type: ['direct', 'group', 'public']).limit(20)
                                         .order(updated_at: :desc)
                                         .includes(:messages)
-                                        .map { |chat| chat.as_json(include: { messages: { only: [:message_text, :sender, :user_id, :created_at] }}, except: [:created_at, :updated_at]) }
+                                        .map { |chat| chat.as_json(include: { messages: { only: [:message_text, :sender, :user_id, :created_at, :event_message] }}, except: [:created_at, :updated_at]) }
                                         .each { |chat| chat['messages'] = chat['messages'].last();
                                         chat['chat_type'] === 'public' || chat['chat_type'] === 'group' ?
                                         chat['members'] = ChatMember.where(chat_id: chat['id']).limit(3).map { |chat_member| User.where(id: chat_member.user_id).first.as_json(only: [:avatar]) } :
