@@ -76,16 +76,4 @@ class Chats::ChatsController < ApplicationController
     end
     render json: { status: "success", message: 'Chat created successfully', chat_id: chat.id, messages: [] }, status: :ok
   end
-
-  def delete
-    request_body = JSON.parse(request.body.read)
-    chat_id = request_body['chat_id']
-    chat = Chat.find_by(id: chat_id)
-    if chat.nil?
-      render json: { status: 'failed', error: 'Chat not found' }, status: :not_found
-    else
-      chat.destroy
-      render json: { status: "success", message: 'Chat deleted successfully' }, status: :ok
-    end
-  end
 end

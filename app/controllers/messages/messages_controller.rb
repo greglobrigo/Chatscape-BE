@@ -12,7 +12,7 @@ class Messages::MessagesController < ApplicationController
     if message.persisted? && chat
       render json: { status: 'success', message: 'Message sent successfully' }, status: :ok
     else
-      render json: { status: 'failed', error: 'Message sending failed', errors: message.errors.full_messages.to_sentence }, status: :unprocessable_entity
+      render json: { status: 'failed', error: 'Message sending failed', errors: message.errors.full_messages.to_sentence }, status: :ok
     end
   end
 
@@ -20,22 +20,22 @@ class Messages::MessagesController < ApplicationController
     request_body = JSON.parse(request.body.read)
     user_id = request_body['user_id']
     chat_id = request_body['chat_id']
-    messages = Chat.find(chat_id).messages.order(created_at: :desc).limit(10).map { |message| message.as_json(except: [:created_at, :updated_at]) }
+    messages = Chat.find(chat_id).messages.order(created_at: :asc).last(30).map { |message| message.as_json(except: [:updated_at]) }
     render json: { status: 'success', message: 'Messages found', messages: messages }, status: :ok
   end
 
   private
 
   def send_message_params
-    params.require(:message).permit(:chat_id, :user_id, :message_text)
+    params.require(:message).permit(:chat_id, :sender, :message_text)
   end
 
   def validate_send_message
-    if send_message_params[:chat_id].nil? || send_message_params[:user_id].nil? || send_message_params[:message_text].nil?
-      render json: { status: 'failed', error: 'Invalid parameters' }, status: :unprocessable_entity
+    if send_message_params[:chat_id].nil? || send_message_params[:sender].nil? || send_message_params[:message_text].nil?
+      return render json: { status: 'failed', error: 'Invalid parameters' }, status: :ok
     end
-    chat = Chat.joins(:users).where(id: send_message_params[:chat_id], users: { id: send_message_params[:user_id] }).first
-    return render json: { status: 'failed', error: 'User not found, chat not found, or user is not a member of the chat' }, status: :unprocessable_entity unless chat
+    chat = Chat.joins(:users).where(id: send_message_params[:chat_id], users: { id: send_message_params[:sender] }).first
+    return render json: { status: 'failed', error: 'User not found, chat not found, or user is not a member of the chat' }, status: :ok unless chat
   end
 
   def get_message_params
@@ -44,9 +44,9 @@ class Messages::MessagesController < ApplicationController
 
   def validate_get_message
     if get_message_params[:chat_id].nil? || get_message_params[:user_id].nil?
-      render json: { status: 'failed', error: 'Invalid parameters' }, status: :unprocessable_entity
+      render json: { status: 'failed', error: 'Invalid parameters' }, status: :ok
     end
     chat = Chat.joins(:users).where(id: get_message_params[:chat_id], users: { id: get_message_params[:user_id] }).first
-    return render json: { status: 'failed', error: 'User not found, chat not found, or user is not a member of the chat' }, status: :unprocessable_entity unless chat
+    return render json: { status: 'failed', error: 'User not found, chat not found, or user is not a member of the chat' }, status: :ok unless chat
   end
 end

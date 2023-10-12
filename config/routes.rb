@@ -12,14 +12,13 @@ Rails.application.routes.draw do
     post '/confirm-email', to: 'users#confirm_email'
     post '/resend-token', to: 'users#resend_token'
     post '/forgot-password', to: 'users#forgot_password'
-    post '/confirm-forgot-password', to: 'users#confirm_forgot_password'
+    post '/confirm-forgotten-password', to: 'users#confirm_forgot_password'
     post '/admin-register', to: 'users#admin_register'
   end
 
   namespace :chats do
     post '/public-or-group', to: 'chats#create_public_or_group'
     post '/create-or-retrieve', to: 'chats#create_or_retrieve'
-    delete '/', to: 'chats#delete'
   end
 
   namespace :messages do
@@ -29,6 +28,7 @@ Rails.application.routes.draw do
 
   namespace :chatmembers do
     post '/add', to: 'chatmembers#add'
+    post '/leave', to: 'chatmembers#leave'
     post '/archive', to: 'chatmembers#archive_chat'
   end
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
