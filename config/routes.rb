@@ -1,5 +1,5 @@
 Rails.application.routes.draw do
-  # is there a way to group these routes?
+  mount ActionCable.server => '/cable'
 
   namespace :users do
     post '/register', to: 'users#register'
@@ -23,7 +23,7 @@ Rails.application.routes.draw do
 
   namespace :messages do
     post '/send', to: 'messages#send_message'
-    get '/get', to: 'messages#get_messages'
+    post '/get', to: 'messages#get_messages'
   end
 
   namespace :chatmembers do

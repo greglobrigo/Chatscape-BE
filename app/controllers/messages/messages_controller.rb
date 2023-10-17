@@ -20,7 +20,7 @@ class Messages::MessagesController < ApplicationController
     request_body = JSON.parse(request.body.read)
     user_id = request_body['user_id']
     chat_id = request_body['chat_id']
-    messages = Chat.find(chat_id).messages.order(created_at: :asc).last(30).map { |message| message.as_json(except: [:updated_at]) }
+    messages = Chat.find(chat_id).messages.joins(:user).select('messages.*, users.avatar').order(created_at: :asc).last(30).map { |message| message.as_json(except: [:updated_at]) }
     render json: { status: 'success', message: 'Messages found', messages: messages }, status: :ok
   end
 
@@ -44,7 +44,7 @@ class Messages::MessagesController < ApplicationController
 
   def validate_get_message
     if get_message_params[:chat_id].nil? || get_message_params[:user_id].nil?
-      render json: { status: 'failed', error: 'Invalid parameters' }, status: :ok
+      return render json: { status: 'failed', error: 'Invalid parameters' }, status: :ok
     end
     chat = Chat.joins(:users).where(id: get_message_params[:chat_id], users: { id: get_message_params[:user_id] }).first
     return render json: { status: 'failed', error: 'User not found, chat not found, or user is not a member of the chat' }, status: :ok unless chat

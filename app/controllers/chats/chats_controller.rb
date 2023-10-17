@@ -55,11 +55,11 @@ class Chats::ChatsController < ApplicationController
     member2 = participants[1]
 
     userexists = User.where(id: member1).exists? && User.where(id: member2).exists?
-    return render json: { status: 'failed', error: 'Useror users not found' }, status: :not_found unless userexists
+    return render json: { status: 'failed', error: 'User or users not found' }, status: :not_found unless userexists
 
     chat = Chat.joins(:chat_members).where(chat_members: {user_id: [member1, member2]}).group(:id).having("count(*) = 2").first
     if chat.present?
-      messages = Message.where(chat_id: chat.id).order(created_at: :asc).limit(100)
+      messages = Chat.find(chat.id).messages.joins(:user).select('messages.*, users.avatar').order(created_at: :asc).last(30).map { |message| message.as_json(except: [:updated_at]) }
       return render json: { status: 'success', message: 'Chat retrieved successfully', chat_id: chat.id, messages: messages }, status: :ok
     end
 
