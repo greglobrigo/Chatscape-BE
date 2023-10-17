@@ -59,7 +59,7 @@ class Users::UsersController < ApplicationController
             user.update(updated_at: DateTime.now)
             render json: { status: "success", message: "Login Successful! Redirecting...", token: token, user: user.id}, status: :ok
         elsif user && user_status === 'unauthenticated'
-            render json: {status: 'success', authentication: "for email validation"}, status: :ok
+            render json: {status: 'success', message: "For email validation"}, status: :ok
         end
     end
 
