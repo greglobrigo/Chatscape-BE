@@ -25,6 +25,7 @@ Rails.application.routes.draw do
   namespace :messages do
     post '/send', to: 'messages#send_message'
     post '/get', to: 'messages#get_messages'
+    post '/chats-and-messages', to: 'messages#get_chats_and_messages'
   end
 
   namespace :chatmembers do
