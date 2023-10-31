@@ -150,7 +150,7 @@ class Users::UsersController < ApplicationController
         .where.not(id: user_id).where.not(id: User.joins(:chats).where(chats: { chat_type: 'direct' }).where('chat_members.user_id = ?', user_id)).limit(10)
         users = users.map { |user| { id: user.id, email: user.email, handle: user.handle, name: user.name, avatar: user.avatar, updated_at: user.updated_at } }
         if users.length == 0
-            render json: { status: "success", message: 'No User Found' }, status: :ok
+            render json: { status: "success", message: 'No User Found', users: [] }, status: :ok
         else
             render json: { status: "success", message: 'Users found', users: users }, status: :ok
         end
