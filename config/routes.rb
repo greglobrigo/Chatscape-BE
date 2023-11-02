@@ -20,6 +20,7 @@ Rails.application.routes.draw do
   namespace :chats do
     post '/public-or-group', to: 'chats#create_public_or_group'
     post '/create-or-retrieve', to: 'chats#create_or_retrieve'
+    post '/search-public', to: 'chats#search_public'
   end
 
   namespace :messages do
