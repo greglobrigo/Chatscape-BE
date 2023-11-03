@@ -87,10 +87,12 @@ class Chats::ChatsController < ApplicationController
   def search_public
     request_body = JSON.parse(request.body.read)
     search = request_body['searchTerm']
+    user_id = request_body['user_id']
     chats = Chat.where("chat_name LIKE ? AND chat_type = 'public'", "%#{search}%").limit(5).map { |chat| chat.as_json(only: [:id, :chat_name, :chat_type]) }
     if chats
     chats.each do |chat|
       chat['members'] = User.joins(:chat_members).where(chat_members: { chat_id: chat['id'] }).limit(3).map { |user| user.as_json(only: [:avatar]) }
+      chat['isMember'] = ChatMember.where(chat_id: chat['id'], user_id: user_id).exists?
     end
   else
     chats = []
