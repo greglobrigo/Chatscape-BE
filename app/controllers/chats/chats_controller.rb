@@ -7,8 +7,8 @@ class Chats::ChatsController < ApplicationController
     participants = request_body['chat_members']
 
 
-    userexists = User.where(id: user_id).exists?
-    return render json: { status: 'failed', error: 'User not found' }, status: :not_found unless userexists
+    user = User.where(id: user_id)
+    return render json: { status: 'failed', error: 'User not found' }, status: :ok unless user.exists?
 
     if participants && participants.length > 0
         participants.each do |participant|
@@ -16,28 +16,34 @@ class Chats::ChatsController < ApplicationController
                 return render json: { status: 'failed', error: 'User cannot be a participant' }, status: :unprocessable_entity
             end
             memberexists = User.where(id: participant).exists?
-            return render json: { status: 'failed', error: 'Member not found' }, status: :not_found unless memberexists
+            return render json: { status: 'failed', error: 'Member not found' }, status: :ok unless memberexists
         end
     end
 
     chat = Chat.create(chat_name:, chat_type:)
     unless chat.persisted?
-      return render json: { status: 'failed', error: 'Chat creation failed', errors: chat.errors }, status: :unprocessable_entity
+      return render json: { status: 'failed', error: 'Chat creation failed', error: chat.errors }, status: :ok
     end
 
     chat_member = ChatMember.create(chat_id: chat.id, user_id:)
     unless chat_member.persisted?
-      return render json: { status: 'failed', error: 'Chat creation failed', errors: chat_member.errors }, status: :unprocessable_entity
+      return render json: { status: 'failed', error: 'Chat creation failed', error: chat_member.errors }, status: :ok
     end
 
     if participants && participants.length > 0
       participants.each do |participant|
         chat_member = ChatMember.create(chat_id: chat.id, user_id: participant)
         unless chat_member.persisted?
-          return render json: { status: 'failed', error: 'Chat creation failed', errors: chat_member.errors }, status: :unprocessable_entity
+          return render json: { status: 'failed', error: 'Chat creation failed', error: chat_member.errors }, status: :ok
         end
       end
     end
+
+    message = Message.create(chat_id: chat.id, user_id: user_id, message_text: "#{user.first.name} created group chat #{chat_name}", sender: 'System', event_message: true)
+    unless message.persisted?
+      return render json: { status: 'failed', error: 'Chat creation failed', error: message.errors }, status: :ok
+    end
+
     render json: { status: 'success', message: 'Chat created successfully', chat: chat }, status: :ok
   end
 
@@ -48,7 +54,7 @@ class Chats::ChatsController < ApplicationController
     participants = [sender, receiver]
 
     if participants.nil? || participants.length != 2
-      return render json: { status: 'failed', error: 'Direct chat must have exactly 2 participants' }, status: :unprocessable_entity
+      return render json: { status: 'failed', error: 'Direct chat must have exactly 2 participants' }, status: :ok
     end
 
     member1 = participants[0]
@@ -65,13 +71,13 @@ class Chats::ChatsController < ApplicationController
 
     chat = Chat.create(chat_name: 'Direct Chat', chat_type: 'direct')
     unless chat.persisted?
-      return render json: { status: 'failed', error: 'Chat creation failed', errors: chat.errors.to_sentence }, status: :unprocessable_entity
+      return render json: { status: 'failed', error: 'Chat creation failed', errors: chat.errors.to_sentence }, status: :ok
     end
 
     participants.each do |participant|
       chat_member = ChatMember.create(chat_id: chat.id, user_id: participant)
       unless chat_member.persisted?
-        return render json: { status: 'failed', error: 'Chat creation failed', errors: chat_member.errors.to_sentence }, status: :unprocessable_entity
+        return render json: { status: 'failed', error: 'Chat creation failed', errors: chat_member.errors.to_sentence }, status: :ok
       end
     end
     render json: { status: "success", message: 'Chat created successfully', chat_id: chat.id, messages: [] }, status: :ok
