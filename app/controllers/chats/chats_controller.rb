@@ -81,15 +81,12 @@ class Chats::ChatsController < ApplicationController
   def search_public
     request_body = JSON.parse(request.body.read)
     search = request_body['searchTerm']
-    chats = Chat.where("chat_name LIKE ? AND chat_type = 'public'", "%#{search}%")
-                                        .joins(:chat_members)
-                                        .where(chat_members: { archived: false }, chat_type: 'public')
-                                        .order(updated_at: :desc)
-                                        .includes(:messages)
-                                        .map { |chat| chat.as_json(include: { messages: { only: [:message_text, :sender, :user_id, :created_at] }}, except: [:created_at, :updated_at]) }
-                                        .each { |chat| chat['messages'] = chat['messages'].last();
-                                        chat['members'] = ChatMember.where(chat_id: chat['id']).limit(3).map { |chat_member| User.where(id: chat_member.user_id).first.as_json(only: [:avatar]) }
-                                     }
+    chats = Chat.where("chat_name LIKE ? AND chat_type = 'public'", "%#{search}%").limit(5).map { |chat| chat.as_json(only: [:id, :chat_name, :chat_type]) }
+    chats.each do |chat|
+      chat['members'] = User.joins(:chat_members).where(chat_members: { chat_id: chat['id'] }).limit(3).map { |user| user.as_json(only: [:avatar]) }
+    end
+
+
     render json: { status: 'success', message: 'Chats retrieved successfully', chats: chats }, status: :ok
   end
 end
