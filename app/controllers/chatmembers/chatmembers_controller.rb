@@ -55,13 +55,10 @@ class Chatmembers::ChatmembersController < ApplicationController
     chat_id = request_body['chat_id']
     user_id = request_body['user_id']
     chat = Chat.find_by(id: chat_id)
-    if chat.nil?
-      return render json: { status: 'failed', message: 'Chat not found' }, status: :ok
-    end
     message = Message.create(chat_id: chat_id, user_id: user_id, message_text: "#{User.find_by(id: user_id).name} has left the chat.", event_message: true, sender: 'System')
     return render json: { status: 'failed', error: 'System message creation failed', errors: message.errors.full_messages.to_sentence }, status: :ok unless message.persisted?
     chat_member = ChatMember.find_by(chat_id: chat_id, user_id: user_id).destroy
-    render json: { status: "success", message: 'Chat member deleted successfully' }, status: :ok unless chat_member.nil?
+    render json: { status: "success", message: 'Left chat successfully' }, status: :ok unless chat_member.nil?
   end
 
   def archive_chatmember
