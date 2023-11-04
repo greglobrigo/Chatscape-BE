@@ -99,4 +99,23 @@ class Chats::ChatsController < ApplicationController
   end
     render json: { status: 'success', message: 'Chats retrieved successfully', chats: chats }, status: :ok
   end
+
+  def join_public
+    request_body = JSON.parse(request.body.read)
+    user_id = request_body['user_id']
+    chat_id = request_body['chat_id']
+    user = User.where(id: user_id)
+    chat = Chat.where(id: chat_id, chat_type: 'public')
+    return render json: { status: 'failed', error: 'Chat not found' }, status: :ok unless chat.exists?
+
+    chat_member = ChatMember.create(chat_id: chat_id, user_id: user_id)
+    unless chat_member.persisted?
+      return render json: { status: 'failed', error: 'Chat creation failed', error: chat_member.errors }, status: :ok
+    end
+
+    message = Message.create(chat_id: chat_id, user_id: user_id, message_text: "#{user.first.name} joined #{chat.first.chat_name}", sender: 'System', event_message: true)
+    return render json: { status: 'failed', error: 'Chat creation failed', error: message.errors }, status: :ok unless message.persisted?
+
+    render json: { status: 'success', message: 'Chat joined successfully' }, status: :ok
+  end
 end
