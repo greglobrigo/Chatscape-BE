@@ -40,9 +40,9 @@ class Messages::MessagesController < ApplicationController
     request_body = JSON.parse(request.body.read)
     user_id = request_body['user_id']
     chat_id = request_body['chat_id']
-    if chat_id && user_id
+    if chat_id && chat_id != 0 && user_id
       chats = Chat.joins(:chat_members)
-      .where(chat_members: { user_id: user_id, archived: false }, chat_type: ['direct', 'group', 'public']).limit(20)
+      .where(chat_members: { user_id: user_id, archived: false }, chat_type: ['direct', 'group', 'public']).limit(10)
       .order(updated_at: :desc)
       .includes(:messages)
       .map { |chat| chat.as_json(include: { messages: { only: [:message_text, :sender, :user_id, :created_at] }}, except: [:created_at, :updated_at]) }
@@ -52,7 +52,7 @@ class Messages::MessagesController < ApplicationController
       chat['members'] = ChatMember.where(chat_id: chat['id']).limit(2).map { |chat_member| User.where(id: chat_member.user_id).first.as_json(only: [:id, :email, :handle, :name, :avatar]) };
       }
         render json: { status: 'success', message: 'Chats found', chats: chats, messages: get_messages_gcm }, status: :ok
-    elsif !chat_id && user_id
+    elsif chat_id == 0 && user_id
       chats = Chat.joins(:chat_members)
       .where(chat_members: { user_id: user_id, archived: false }, chat_type: ['direct', 'group', 'public']).limit(20)
       .order(updated_at: :desc)
@@ -63,7 +63,7 @@ class Messages::MessagesController < ApplicationController
       chat['members'] = ChatMember.where(chat_id: chat['id']).limit(3).map { |chat_member| User.where(id: chat_member.user_id).first.as_json(only: [:avatar]) } :
       chat['members'] = ChatMember.where(chat_id: chat['id']).limit(2).map { |chat_member| User.where(id: chat_member.user_id).first.as_json(only: [:id, :email, :handle, :name, :avatar]) };
       }
-      render json: { status: 'success', message: 'Chats found', chats: chats }, status: :ok
+      render json: { status: 'success', message: 'Chats found', chats: chats, messages: [] }, status: :ok
     else
       render json: { status: 'failed', error: 'Invalid request' }, status: :ok
     end
