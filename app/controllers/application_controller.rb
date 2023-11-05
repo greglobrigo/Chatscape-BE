@@ -13,7 +13,7 @@ class ApplicationController < ActionController::API
       render json: { status: 'failed', error: 'Invalid token.' }, status: :ok
       #include minutes in token expiry
     elsif token_expiry.to_i < DateTime.now.strftime('%Y%m%d%H%M%S').to_i
-      render json: { status: 'failed', error: 'Token expired.' }, status: :ok
+      render json: { status: 'failed', error: 'Session expired, please login again.' }, status: :ok
     elsif request_secret != token_secret
       render json: { status: 'failed', error: 'Invalid token.' }, status: :ok
     end

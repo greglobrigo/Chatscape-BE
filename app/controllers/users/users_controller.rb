@@ -43,6 +43,17 @@ class Users::UsersController < ApplicationController
         end
     end
 
+    def validate
+        request_body = JSON.parse(request.body.read)
+        user_id = request_body["user_id"]
+        user = User.find_by(id: user_id)
+        if user
+            render json: { status: "success" }, status: :ok
+        else
+            render json: { status: 'failed', error: "Error validating session." }, status: :ok
+        end
+    end
+
     def login
         request_body = JSON.parse(request.body.read)
         email = request_body["email"]
