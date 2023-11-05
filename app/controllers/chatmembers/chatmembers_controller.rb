@@ -80,7 +80,7 @@ class Chatmembers::ChatmembersController < ApplicationController
     params.require(:chatmember).permit(:user_id, :chat_id, chat_members: [])
   end
 
-  def validate_add_chatmember
+  def validate_add_chat_member
     participants = chatmembers_params[:chat_members]
     chat_id = chatmembers_params[:chat_id]
     chat = Chat.find_by(id: chat_id)
@@ -89,8 +89,10 @@ class Chatmembers::ChatmembersController < ApplicationController
     elsif chat.chat_type == 'direct'
         return render json: { status: 'failed', error: 'Cannot add members to direct chat' }, status: :ok
     end
-    isAlreadyMember = ChatMember.where(chat_id: chat_id, user_id: participants).exists?
-    return render json: { status: 'failed', error: 'A User or users you are trying to add is already a member of the chat.' }, status: :ok if isAlreadyMember
+    participants.each do |participant|
+      isAlreadyMember = ChatMember.where(chat_id: chat_id, user_id: participant).exists?
+      return render json: { status: 'failed', error: "#{User.find_by(id: participant).name} is already a member of the chat" }, status: :ok if isAlreadyMember
+    end
   end
 
   def validate_leave_chat_member
