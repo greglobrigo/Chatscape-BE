@@ -42,7 +42,7 @@ class Messages::MessagesController < ApplicationController
     chat_id = request_body['chat_id']
     if chat_id && chat_id != 0 && user_id
       chats = Chat.joins(:chat_members)
-      .where(chat_members: { user_id: user_id, archived: false }, chat_type: ['direct', 'group', 'public']).limit(10)
+      .where(chat_members: { user_id: user_id, archived: false }, chat_type: ['direct', 'group', 'public']).limit(20)
       .order(updated_at: :desc)
       .includes(:messages)
       .map { |chat| chat.as_json(include: { messages: { only: [:message_text, :sender, :user_id, :created_at] }}, except: [:created_at, :updated_at]) }
