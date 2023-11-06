@@ -5,15 +5,13 @@ class Messages::MessagesController < ApplicationController
     request_body = JSON.parse(request.body.read)
     chat_id = request_body['chat_id']
     user_id = request_body['sender']
-    sender = User.find(user_id).name
+    sender = User.find_by(id: user_id).name
     message_text = request_body['message_text']
     message = Message.create(chat_id:, user_id:, message_text:, sender:)
-    chat = Chat.find(chat_id).update(updated_at: Time.now)
-    if message.persisted? && chat
+    if sender && message.persisted?
       render json: { status: 'success', message: 'Message sent successfully' }, status: :ok
     else
-      render json: { status: 'failed', error: 'Message sending failed', errors: message.errors.full_messages.to_sentence },
-             status: :ok
+      render json: { status: 'failed', error: 'Message sending failed', errors: message.errors.full_messages.to_sentence }, status: :ok
     end
   end
 

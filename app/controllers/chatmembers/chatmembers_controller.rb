@@ -6,8 +6,10 @@ class Chatmembers::ChatmembersController < ApplicationController
     user_id = request_body['user_id']
     chat_id = request_body['chat_id']
     participants = request_body['chat_members']
-    user_name = User.find_by(id: user_id).name
-    chat_type = Chat.find_by(id: chat_id).chat_type
+    user = User.find_by(id: user_id)
+    user_name = user.name
+    chat = Chat.find_by(id: chat_id, chat_type: 'group')
+    chat_type = chat.chat_type
 
     return render json: { status: 'failed', error: 'Invalid request' }, status: :ok if chat_id.nil? || user_id.nil?
     return render json: { status: 'failed', error: 'No members to add' }, status: :ok if participants.nil? || participants.length == 0
@@ -27,27 +29,19 @@ class Chatmembers::ChatmembersController < ApplicationController
         end
     end
 
-    if chat_type === 'group'
-      message = Message.create(chat_id: chat_id, user_id: user_id, message_text: "#{added_members.length === 1 ? added_members[0] :
-      added_members.length === 2 ? added_members.join(' and ') :
-      added_members[0..-2].join(', ') + ' and ' + added_members[-1]} has been added to the chat by #{user_name}.", event_message: true, sender: 'System')
-      return render json: { status: 'failed', error: 'System message creation failed', errors: message.errors.full_messages.to_sentence }, status: :ok unless message.persisted?
-    elsif chat_type === 'public'
-      message = Message.create(chat_id: chat_id, user_id: user_id, message_text: "#{added_members.length === 1 ? added_members[0] :
-      added_members.length === 2 ? added_members.join(' and ') :
-      added_members[0..-2].join(', ') + ' and ' + added_members[-1]} has joined the chat.", event_message: true, sender: 'System')
-      return render json: { status: 'failed', error: 'System message creation failed', errors: message.errors.full_messages.to_sentence }, status: :ok unless message.persisted?
-    end
+      message_text = "#{added_members.length === 1 ? added_members[0] : added_members.length === 2 ? added_members.join(' and ') : added_members[0..-2].join(', ') + ' and ' + added_members[-1]} has been added to the chat by #{user_name}."
+      message = Message.create(chat_id: chat_id, user_id: user_id, message_text: message_text, event_message: true, sender: 'System')
+      return render json: { status: 'failed', error: 'System message creation failed', error: message.errors.full_messages.to_sentence }, status: :ok unless message.persisted?
 
     participants.each do |participant|
       chat_member = ChatMember.create(chat_id:, user_id: participant)
       unless chat_member.persisted?
-        return render json: { status: 'failed', error: 'Chat creation failed', errors: chat_member.errors }, status: :ok
+        return render json: { status: 'failed', error: 'Chat creation failed', error: chat_member.errors }, status: :ok
       end
     end
 
-
-    return render json: { status: "success", message: 'Chat members added successfully', added_members: added_members }, status: :ok
+    message_response = "#{added_members.length === 1 ? added_members[0] : added_members.length === 2 ? added_members.join(' and ') : added_members[0..-2].join(', ') + ' and ' + added_members[-1]} has successfully been added to the chat.}"
+    return render json: { status: "success", message: message_response, added_members: added_members }, status: :ok
   end
 
   def leave
