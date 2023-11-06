@@ -8,12 +8,12 @@ class Chatmembers::ChatmembersController < ApplicationController
     participants = request_body['chat_members']
     user = User.find_by(id: user_id)
     user_name = user.name
-    chat = Chat.find_by(id: chat_id, chat_type: 'group')
-    chat_type = chat.chat_type
+    chat = Chat.find_by(id: chat_id)
 
     return render json: { status: 'failed', error: 'Invalid request' }, status: :ok if chat_id.nil? || user_id.nil?
     return render json: { status: 'failed', error: 'No members to add' }, status: :ok if participants.nil? || participants.length == 0
-    return render json: { status: 'failed', error: 'User or Chat not found' }, status: :ok if user_name.nil? || chat_type.nil?
+    return render json: { status: 'failed', error: 'User not found' }, status: :ok if user.nil?
+    return render json: { status: 'failed', error: 'Chat not found' }, status: :ok if chat.nil?
 
     added_members = []
     participants.each do |participant|
