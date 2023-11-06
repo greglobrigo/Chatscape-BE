@@ -40,7 +40,7 @@ class Chatmembers::ChatmembersController < ApplicationController
       end
     end
 
-    message_response = "#{added_members.length === 1 ? added_members[0] : added_members.length === 2 ? added_members.join(' and ') : added_members[0..-2].join(', ') + ' and ' + added_members[-1]} has successfully been added to the chat.}"
+    message_response = "#{added_members.length === 1 ? added_members[0] : added_members.length === 2 ? added_members.join(' and ') : added_members[0..-2].join(', ') + ' and ' + added_members[-1]} has successfully been added to the chat."
     return render json: { status: "success", message: message_response, added_members: added_members }, status: :ok
   end
 
