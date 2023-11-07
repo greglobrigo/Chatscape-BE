@@ -159,7 +159,6 @@ GEM
     rake (13.0.6)
     rdoc (6.5.0)
       psych (>= 4.0.0)
-    redis (4.8.1)
     reline (0.3.8)
       io-console (~> 0.5)
     stringio (3.0.8)
@@ -186,7 +185,6 @@ DEPENDENCIES
   puma (~> 5.0)
   rack-cors
   rails (~> 7.0.8)
-  redis (~> 4.0)
   tzinfo-data
 
 RUBY VERSION
