@@ -3,7 +3,7 @@ class Message < ApplicationRecord
     belongs_to :user
     validates :message_text, presence: true
     validates :sender, presence: true
-    after_create_commit { broadcast_message }
+    # after_create_commit { broadcast_message }
     after_create_commit { self.chat.update(updated_at: Time.now) }
 
     private
