@@ -89,7 +89,7 @@ user6 = User.create!(
     handle: "@sing4u",
     auth_token: "xyz123",
     status: "active",
-    avatar: 6,
+    avatar: 1,
     created_at: Time.now,
     updated_at: Time.now
 )
@@ -128,7 +128,7 @@ user9 = User.create!(
     handle: "@itsmepaul",
     auth_token: "xyz123",
     status: "active",
-    avatar: 5,
+    avatar: 2,
     created_at: Time.now,
     updated_at: Time.now
 )
