@@ -37,7 +37,7 @@ user2 = User.create!(
     handle: "@beerian",
     auth_token: "xyz123",
     status: "active",
-    avatar: generateRandomMaleAvatar(),
+    avatar: 2,
     created_at: Time.now,
     updated_at: Time.now
 )
@@ -50,7 +50,7 @@ user3 = User.create!(
     handle: "@insanity",
     auth_token: "xyz123",
     status: "active",
-    avatar: generateRandomMaleAvatar(),
+    avatar: 3,
     created_at: Time.now,
     updated_at: Time.now
 )
@@ -63,7 +63,7 @@ user4 = User.create!(
     handle: "@wazzapau",
     auth_token: "xyz123",
     status: "active",
-    avatar: generateRandomFemaleAvatar(),
+    avatar: 4,
     created_at: Time.now,
     updated_at: Time.now
 )
@@ -76,7 +76,7 @@ user5 = User.create!(
     handle: "@shammy",
     auth_token: "xyz123",
     status: "active",
-    avatar: generateRandomFemaleAvatar(),
+    avatar: 5,
     created_at: Time.now,
     updated_at: Time.now
 )
@@ -89,7 +89,7 @@ user6 = User.create!(
     handle: "@sing4u",
     auth_token: "xyz123",
     status: "active",
-    avatar: generateRandomMaleAvatar(),
+    avatar: 6,
     created_at: Time.now,
     updated_at: Time.now
 )
@@ -102,7 +102,7 @@ user7 = User.create!(
     handle: "@anabanana",
     auth_token: "xyz123",
     status: "active",
-    avatar: generateRandomFemaleAvatar(),
+    avatar: 4,
     created_at: Time.now,
     updated_at: Time.now
 )
@@ -115,7 +115,7 @@ user8 = User.create!(
     handle: "@justincase",
     auth_token: "xyz123",
     status: "active",
-    avatar: generateRandomMaleAvatar(),
+    avatar: 2,
     created_at: Time.now,
     updated_at: Time.now
 )
@@ -128,7 +128,7 @@ user9 = User.create!(
     handle: "@itsmepaul",
     auth_token: "xyz123",
     status: "active",
-    avatar: generateRandomMaleAvatar(),
+    avatar: 5,
     created_at: Time.now,
     updated_at: Time.now
 )
@@ -141,7 +141,7 @@ user10 = User.create!(
     handle: "@itsmegreg",
     auth_token: "xyz123",
     status: "active",
-    avatar: generateRandomMaleAvatar(),
+    avatar: 3,
     created_at: Time.now,
     updated_at: Time.now
 )
