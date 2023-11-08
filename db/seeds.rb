@@ -86,7 +86,7 @@ user6 = User.create!(
     email: "lehmara@gmail.com",
     password: Base64.encode64(SecureRandom.alphanumeric(8) + ENV["SALT"]),
     name: "Lehmar A",
-    handle: "@singu2sleep",
+    handle: "@sing4u",
     auth_token: "xyz123",
     status: "active",
     avatar: generateRandomMaleAvatar(),
