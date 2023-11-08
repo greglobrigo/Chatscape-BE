@@ -18,10 +18,10 @@ end
 
 user1 = User.create!(
     id: SecureRandom.uuid,
-    email: "johnsmith@gmail.com",
+    email: "johns@gmail.com",
     password: Base64.encode64("password" + ENV["SALT"]),
     name: "John S",
-    handle: "@johnsmith",
+    handle: "@smitherines",
     auth_token: "xyz123",
     status: "active",
     avatar: 1,
@@ -31,10 +31,114 @@ user1 = User.create!(
 
 user2 = User.create!(
     id: SecureRandom.uuid,
-    email: "brianmolina@gmail.com",
+    email: "brianm@gmail.com",
     password: Base64.encode64(SecureRandom.alphanumeric(8) + ENV["SALT"]),
     name: "Brian M",
-    handle: "@brianmolina",
+    handle: "@beerian",
+    auth_token: "xyz123",
+    status: "active",
+    avatar: generateRandomMaleAvatar(),
+    created_at: Time.now,
+    updated_at: Time.now
+)
+
+user3 = User.create!(
+    id: SecureRandom.uuid,
+    email: "tristann@gmail.com",
+    password: Base64.encode64(SecureRandom.alphanumeric(8) + ENV["SALT"]),
+    name: "Tristan N",
+    handle: "@insanity",
+    auth_token: "xyz123",
+    status: "active",
+    avatar: generateRandomMaleAvatar(),
+    created_at: Time.now,
+    updated_at: Time.now
+)
+
+user4 = User.create!(
+    id: SecureRandom.uuid,
+    email: "paulinemae@gmail.com",
+    password: Base64.encode64(SecureRandom.alphanumeric(8) + ENV["SALT"]),
+    name: "Pauline M",
+    handle: "@wazzapau",
+    auth_token: "xyz123",
+    status: "active",
+    avatar: generateRandomFemaleAvatar(),
+    created_at: Time.now,
+    updated_at: Time.now
+)
+
+user5 = User.create!(
+    id: SecureRandom.uuid,
+    email: "sheilamae@gmail.com",
+    password: Base64.encode64(SecureRandom.alphanumeric(8) + ENV["SALT"]),
+    name: "Sheila P",
+    handle: "@shammy",
+    auth_token: "xyz123",
+    status: "active",
+    avatar: generateRandomFemaleAvatar(),
+    created_at: Time.now,
+    updated_at: Time.now
+)
+
+user6 = User.create!(
+    id: SecureRandom.uuid,
+    email: "lehmara@gmail.com",
+    password: Base64.encode64(SecureRandom.alphanumeric(8) + ENV["SALT"]),
+    name: "Lehmar A",
+    handle: "@singu2sleep",
+    auth_token: "xyz123",
+    status: "active",
+    avatar: generateRandomMaleAvatar(),
+    created_at: Time.now,
+    updated_at: Time.now
+)
+
+user7 = User.create!(
+    id: SecureRandom.uuid,
+    email: "Anar@gmail.com",
+    password: Base64.encode64(SecureRandom.alphanumeric(8) + ENV["SALT"]),
+    name: "Ana R",
+    handle: "@anabanana",
+    auth_token: "xyz123",
+    status: "active",
+    avatar: generateRandomFemaleAvatar(),
+    created_at: Time.now,
+    updated_at: Time.now
+)
+
+user8 = User.create!(
+    id: SecureRandom.uuid,
+    email: "justinl@gmail.com",
+    password: Base64.encode64(SecureRandom.alphanumeric(8) + ENV["SALT"]),
+    name: "Justin L",
+    handle: "@justincredible",
+    auth_token: "xyz123",
+    status: "active",
+    avatar: generateRandomMaleAvatar(),
+    created_at: Time.now,
+    updated_at: Time.now
+)
+
+user9 = User.create!(
+    id: SecureRandom.uuid,
+    email: "paulaz@gmail.com",
+    password: Base64.encode64(SecureRandom.alphanumeric(8) + ENV["SALT"]),
+    name: "Paul A",
+    handle: "@itsmepaul",
+    auth_token: "xyz123",
+    status: "active",
+    avatar: generateRandomMaleAvatar(),
+    created_at: Time.now,
+    updated_at: Time.now
+)
+
+user10 = User.create!(
+    id: SecureRandom.uuid,
+    email: "gregl@gmail.com",
+    password: Base64.encode64(SecureRandom.alphanumeric(8) + ENV["SALT"]),
+    name: "Greg L",
+    handle: "@greggy",
     auth_token: "xyz123",
     status: "active",
     avatar: generateRandomMaleAvatar(),
