@@ -67,6 +67,19 @@ class Messages::MessagesController < ApplicationController
     end
   end
 
+  def delete_message
+    request_body = JSON.parse(request.body.read)
+    message_text = request_body['message_text']
+    message = Message.where(message_text: message_text).first
+    if message
+      message.destroy
+      render json: { status: 'success', message: 'Message deleted successfully' }, status: :ok
+    else
+      render json: { status: 'failed', error: 'Message not found' }, status: :ok
+    end
+  end
+
+
   private
 
   def send_message_params
