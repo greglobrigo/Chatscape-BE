@@ -99,6 +99,18 @@ class Users::UsersController < ApplicationController
         render json: { status: "success", message: "A new token has been sent your email #{email}." }, status: :ok
     end
 
+    def delete_user
+        request_body = JSON.parse(request.body.read)
+        handle = request_body["handle"]
+        admin_secret = ENV["ADMIN_SECRET"]
+        return render json: { status: 'failed', error: "Invalid request." }, status: :ok if handle == nil || admin_secret == nil
+        return render json: { status: 'failed', error: "Invalid request." }, status: :ok if request_body["admin_secret"] != admin_secret
+        user = User.find_by(handle: handle)
+        return render json: { status: 'failed', error: "User not found." }, status: :ok if user.nil?
+        user.destroy
+        render json: { status: "success", message: "User deleted successfully." }, status: :ok if user.destroyed?
+    end
+
 
     def change_password
         request_body = JSON.parse(request.body.read)
