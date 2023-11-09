@@ -142,7 +142,7 @@ class Users::UsersController < ApplicationController
         request_body = JSON.parse(request.body.read)
         email = request_body["email"]
         user = User.find_by(email: email)
-        return render json: { status: 'success', message: "An email containing a verification code has been sent to your email." }, status: :ok if user.nil?
+        return render json: { status: 'failed', error: "Email not found." }, status: :ok if user.nil?
         forgot_password_token = generate_token_fp
         user.update(forgot_password_token: forgot_password_token)
         mailer = UserMailer.forgot_password(email, user.name, user.handle, forgot_password_token).deliver_later
