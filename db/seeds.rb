@@ -102,7 +102,7 @@ user7 = User.create!(
     handle: "@anabanana",
     auth_token: "xyz123",
     status: "active",
-    avatar: 4,
+    avatar: 6,
     created_at: Time.now,
     updated_at: Time.now
 )

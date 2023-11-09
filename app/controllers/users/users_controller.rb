@@ -195,6 +195,16 @@ class Users::UsersController < ApplicationController
         end
     end
 
+    def edit_avatar
+        request_body = JSON.parse(request.body.read)
+        email = request_body['email']
+        avatar = request_body['avatar']
+        user = User.find_by(email: email)
+        return render json: { status: 'failed', error: "User not found" }, status: :ok unless user
+        user.update(avatar: avatar)
+        render json: { status: "success", message: 'Avatar updated' }, status: :ok
+    end
+
     def get_profile
         request_body = JSON.parse(request.body.read)
         user_id = request_body['user_id']

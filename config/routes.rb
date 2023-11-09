@@ -16,6 +16,7 @@ Rails.application.routes.draw do
     post '/admin-register', to: 'users#admin_register'
     post '/resend-token', to: 'users#resend_token'
     post '/validate', to: 'users#validate'
+    post '/edit-avatar', to: 'users#edit_avatar'
   end
 
   namespace :chats do
